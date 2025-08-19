@@ -293,7 +293,14 @@ cbit_8 *DEMUX_p8(int p, int s1, int s2, int s3)
 }
 
 
-int main() 
+/* HELPER GATES */
+
+int OR_p3(int p, int q, int r) 
+{
+    return OR(OR(p, q), r);
+}
+
+int test() 
 {
     /* UNARY LOGIC GATES */
     registry *rg1b = init_registry(1);
