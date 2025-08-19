@@ -214,12 +214,84 @@ int OR_p8(int p0, int p1, int p2, int p3,
     );
 }
 
+/* NAME:    `mux_c16_p4`                        */
+/* INPUT:   p0, p1, p2, p3, s1, s2              */
+/* OUTPUT:  o                                   */
+cbit_16 *MUX_c16_p4(cbit_16 *p0, cbit_16 *p1, cbit_16 *p2, cbit_16 *p3,
+                    int s1, int s2) 
+{
+    return MUX_c16(
+        MUX_c16(p0, p1, s1),
+        MUX_c16(p2, p3, s1),
+        s2
+    );
+}
+
+/* NAME:    `mux_c16_p8`                        */
+/* INPUT:   p0, p1, p2, p3,                     */
+/*          p4, p5, p6, p7,                     */
+/*          s1, s2, s3                          */
+/* OUTPUT:  o                                   */
 cbit_16 *MUX_c16_p8(cbit_16 *p0, cbit_16 *p1, cbit_16 *p2, cbit_16 *p3,
                     cbit_16 *p4, cbit_16 *p5, cbit_16 *p6, cbit_16 *p7,
                     int s1, int s2, int s3)
 {
-    
+    return MUX_c16(
+        MUX_c16(
+            MUX_c16(p0, p1, s1),
+            MUX_c16(p2, p3, s1),
+            s2
+        ), MUX_c16(
+            MUX_c16(p4, p5, s1),
+            MUX_c16(p6, p7, s1),
+            s2
+        ), s3
+    );
 }
+
+
+/* DEMULTIPLEXER GATES */
+
+typedef struct cbit_2 { int data[2]; } cbit_2;
+typedef struct cbit_4 { int data[4]; } cbit_4;
+typedef struct cbit_8 { int data[8]; } cbit_8;
+
+cbit_2 *DEMUX(int p, int s)
+{
+    cbit_2 *r = malloc(sizeof(int) * 2);
+    r->data[0] = AND(p, s);
+    r->data[1] = AND(p, NOT(s));
+
+    return r;
+}
+
+cbit_4 *DEMUX_p4(int p, int s1, int s2)
+{
+    cbit_4 *r = malloc(sizeof(int) * 4);
+    r->data[0] = AND(p, AND(s1, s2));
+    r->data[1] = AND(p, AND(s1, NOT(s2)));
+    r->data[2] = AND(p, AND(NOT(s1), s2));
+    r->data[3] = AND(p, AND(NOT(s1), NOT(s2)));
+
+    return r;
+}
+
+cbit_8 *DEMUX_p8(int p, int s1, int s2, int s3)
+{
+    cbit_8 *r = malloc(sizeof(int) * 8);
+
+    r->data[0] = AND(p, AND(s1, AND(s2, s3)));
+    r->data[1] = AND(p, AND(s1, AND(s2, NOT(s3))));
+    r->data[2] = AND(p, AND(s1, AND(NOT(s2), s3)));
+    r->data[3] = AND(p, AND(NOT(s1), AND(s2, s3)));
+    r->data[4] = AND(p, AND(NOT(s1), AND(NOT(s2), s3)));
+    r->data[5] = AND(p, AND(NOT(s1), AND(s2, NOT(s3))));
+    r->data[6] = AND(p, AND(s1, AND(NOT(s2), NOT(s3))));
+    r->data[7] = AND(p, AND(NOT(s1), AND(NOT(s2), NOT(s3))));
+
+    return r;
+}
+
 
 int main() 
 {
